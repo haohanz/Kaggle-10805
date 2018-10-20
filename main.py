@@ -43,7 +43,7 @@ train_loader = Data.DataLoader(loader('datafile/train.txt'),
                               shuffle=True, 
                               num_workers=4, 
                               drop_last=True)
-test_loader = Data.DataLoader(loader('datafile/test.txt',test=True), 
+test_loader = Data.DataLoader(loader('datafile/val.txt',test=True), 
                               batch_size=args.batch_size,
                               num_workers=4)
 
