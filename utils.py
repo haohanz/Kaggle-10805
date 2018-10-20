@@ -10,7 +10,7 @@ class loader(Data.Dataset):
         self.list_file = open(list_file).readlines()
         self.num_class = num_class
         self.transform = Tran.Compose([
-               Tran.RandomCrop(112),
+               Tran.RandomCrop(224),
                Tran.ColorJitter(0.2,0.2,0.2,0.05),
                Tran.RandomHorizontalFlip(),
                Tran.ToTensor(),
