@@ -28,7 +28,7 @@ for one_data in label_list:
 f = open('train.txt','w')
 g = open('val.txt','w')
 for one_data in data:
-	string = YOUR_PATH+'/'+one_data+'\t'
+	string = YOUR_PATH+'/'+one_data+'.jpg\t'
 	for label in data[one_data]:
 		string+=str(label)+','
 	string = string[:-1]+'\n'
