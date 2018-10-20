@@ -36,12 +36,12 @@ if args.resume:
     best_f2 = checkpoint['f2']
 
 
-test_loader = Data.DataLoader(loader('train.txt'),
+test_loader = Data.DataLoader(loader('datafile/train.txt'),
                               batch_size=args.batch_size, 
                               shuffle=True, 
                               num_workers=4, 
                               drop_last=True)
-test_loader = Data.DataLoader(loader('test.txt',test=True), 
+test_loader = Data.DataLoader(loader('datafile/test.txt',test=True), 
                               batch_size=args.batch_size,
                               num_workers=4)
 
