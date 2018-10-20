@@ -2,6 +2,8 @@ from collections import defaultdict
 import random
 random.seed(666)
 
+YOUR_PATH = ''
+
 all_labels = open('classes-trainable.csv').readlines()[1:]
 print('num_classes:{}'.format(len(all_labels)))
 label_list = open('train_human_labels.csv').readlines()[1:]
@@ -26,7 +28,7 @@ for one_data in label_list:
 f = open('train.txt','w')
 g = open('val.txt','w')
 for one_data in data:
-	string = one_data+'\t'
+	string = YOUR_PATH+'/'+one_data+'\t'
 	for label in data[one_data]:
 		string+=str(label)+','
 	string = string[:-1]+'\n'
