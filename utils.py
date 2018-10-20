@@ -14,11 +14,11 @@ class loader(Data.Dataset):
                Tran.ColorJitter(0.2,0.2,0.2,0.05),
                Tran.RandomHorizontalFlip(),
                Tran.ToTensor(),
-               Tran.Normalize((0.396, 0.431, 0.455), (0.241, 0.237, 0.243)),])
+               Tran.Normalize((0.455, 0.430, 0.396), (0.244, 0.237, 0.241)),])
         if test:
             self.transform = Tran.Compose([
                Tran.ToTensor(),
-               Tran.Normalize((0.396, 0.431, 0.455), (0.241, 0.237, 0.243)),])
+               Tran.Normalize((0.455, 0.430, 0.396), (0.244, 0.237, 0.241)),])
 
 
     def __getitem__(self, index):
@@ -75,10 +75,10 @@ def val(test_loader, net):
 
         val_loss += loss.item()
         pred = (outputs>0).float()
-        TP += ((pred == 1) & (target.data == 1)).sum().item()
-        TN += ((pred == 0) & (target.data == 0)).sum().item()
-        FN += ((pred == 0) & (target.data == 1)).sum().item()
-        FP += ((pred == 1) & (target.data == 0)).sum().item()
+        TP += ((pred == 1) & (targets.data == 1)).sum().item()
+        TN += ((pred == 0) & (targets.data == 0)).sum().item()
+        FN += ((pred == 0) & (targets.data == 1)).sum().item()
+        FP += ((pred == 1) & (targets.data == 0)).sum().item()
 
     p = TP / (TP + FP)
     r = TP / (TP + FN)
