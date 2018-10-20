@@ -55,7 +55,7 @@ def train(train_loader, net, criterion, optimizer):
         FN += ((pred == 0) & (targets.data == 1)).sum().item()
         FP += ((pred == 1) & (targets.data == 0)).sum().item()
         p = TP / (TP + FP + 1e-10)
-        r = TP / (TP + FP + 1e-10)
+        r = TP / (TP + FN + 1e-10)
         F2 = 5 * r * p / (r + 4*p + 1e-10)
         if batch_idx % (n//20) == 0:
             print('{}/20 passed, loss is {}, p is {}%, r is {}%, F2 is {}'.format(
