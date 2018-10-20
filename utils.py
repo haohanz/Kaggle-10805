@@ -38,7 +38,7 @@ class loader(Data.Dataset):
 def train(train_loader, net, criterion, optimizer):
     print('\nEpoch: %d' % epoch)
     net.train()
-    train_loss, TP，TN，FP，FN = 0, 0, 0, 0, 0
+    train_loss, TP, TN, FP, FN = 0, 0, 0, 0, 0
     for batch_idx, (inputs, targets) in enumerate(train_loader):
         inputs, targets = inputs.to('cuda'), targets.to('cuda')
         optimizer.zero_grad()
@@ -66,7 +66,7 @@ def train(train_loader, net, criterion, optimizer):
 
 def val(test_loader, net):
     net.eval()
-    val_loss, TP，TN，FP，FN = 0, 0, 0, 0, 0
+    val_loss, TP, TN, FP, FN = 0, 0, 0, 0, 0
     with torch.no_grad():
         for batch_idx, (inputs, targets) in enumerate(val_loader):
             inputs, targets = inputs.to('cuda'), targets.to('cuda')
