@@ -19,7 +19,7 @@ parser.add_argument('--batch_size', default=64, type=int, help='batch size')
 parser.add_argument('--model_name', default='model', type=str, help='name of the saved model')
 parser.add_argument('--num_epoch', default=100, type=int, help='number of epoch')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
-
+args = parser.parse_args()
 
 best_f2 = 0  
 
