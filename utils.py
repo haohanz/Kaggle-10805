@@ -60,7 +60,7 @@ def train(train_loader, net, criterion, optimizer):
         if batch_idx % (n//20) == 0:
             print('{}/20 passed, loss is {}, p is {}%, r is {}%, F2 is {}'.format(
                            batch_idx//(n//20), 
-                           round(train_loss/(batch_idx+1),3),
+                           round(train_loss/(batch_idx+1)*1000,3),
                            round(p*100,3),
                            round(r*100,3),
                            round(F2,3))
