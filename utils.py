@@ -1,4 +1,4 @@
-import cv2
+from PIL import Image
 import numpy as np
 import torch
 import torchvision.transforms as Tran
@@ -23,7 +23,7 @@ class loader(Data.Dataset):
 
     def __getitem__(self, index):
         file, labels = self.list_file[index].split('\t')
-        img = cv2.imread(file)
+        img = Image.open(file)
         img = self.transform(img)
         labels = list(map(int,labels.strip().split(',')))
         lable = np.zeros(self.num_class)
