@@ -10,7 +10,7 @@ class loader(Data.Dataset):
         self.list_file = open(list_file).readlines()
         self.num_class = num_class
         self.transform = Tran.Compose([
-               Tran.RandomCrop(224),
+               Tran.RandomCrop(112),
                Tran.ColorJitter(0.2,0.2,0.2,0.05),
                Tran.RandomHorizontalFlip(),
                Tran.ToTensor(),
@@ -29,16 +29,17 @@ class loader(Data.Dataset):
         lable = np.zeros(self.num_class)
         for i in labels:
             lable[i] = 1
-        return img, lable.astype('float')
+        return img, lable.astype('float32')
 
     def __len__(self):
         return len(self.list_file)
 
 
 def train(train_loader, net, criterion, optimizer):
-    print('\nEpoch: %d' % epoch)
     net.train()
     train_loss, TP, TN, FP, FN = 0, 0, 0, 0, 0
+    n = len(train_loader)
+
     for batch_idx, (inputs, targets) in enumerate(train_loader):
         inputs, targets = inputs.to('cuda'), targets.to('cuda')
         optimizer.zero_grad()
@@ -48,17 +49,25 @@ def train(train_loader, net, criterion, optimizer):
         optimizer.step()
 
         train_loss += loss.item()
-        pred = (outputs>0).float()
-        TP += ((pred == 1) & (target.data == 1)).sum().item()
-        TN += ((pred == 0) & (target.data == 0)).sum().item()
-        FN += ((pred == 0) & (target.data == 1)).sum().item()
-        FP += ((pred == 1) & (target.data == 0)).sum().item()
+        pred = (outputs>-1).float()
+        TP += ((pred == 1) & (targets.data == 1)).sum().item()
+        TN += ((pred == 0) & (targets.data == 0)).sum().item()
+        FN += ((pred == 0) & (targets.data == 1)).sum().item()
+        FP += ((pred == 1) & (targets.data == 0)).sum().item()
+        p = TP / (TP + FP + 1e-10)
+        r = TP / (TP + FP + 1e-10)
+        F2 = 5 * r * p / (r + 4*p + 1e-10)
+        if batch_idx % (n//20) == 0:
+            print('{}/20 passed, loss is {}, p is {}%%, r is {}%%, F2 is {}'.format(
+                           batch_idx//(n//20), 
+                           round(train_loss/(batch_idx+1),3),
+                           round(p*100,3),
+                           round(r*100,3),
+                           round(F2,3))
+                    )
 
-    p = TP / (TP + FP)
-    r = TP / (TP + FN)
-    F2 = 5 * r * p / (r + 4*p)
 
-    print('Loss: %.3f | F2 score'%(train_loss/(batch_idx+1), F2))
+    print('Epoch finished!')
     return
 
 
@@ -84,5 +93,5 @@ def val(test_loader, net):
     r = TP / (TP + FN)
     F2 = 5 * r * p / (r + 4*p)
 
-    print('Loss: %.3f | F2 score'%(val_loss/(batch_idx+1), F2))
+    print('Test set: loss: %.3f | %.3f score'%(val_loss/(batch_idx+1), F2))
     return F2
