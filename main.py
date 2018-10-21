@@ -46,14 +46,14 @@ train_loader = Data.DataLoader(loader('datafile/train.txt'),
 test_loader = Data.DataLoader(loader('datafile/val.txt',test=True), 
                               batch_size=args.batch_size,
                               num_workers=8)
-def loss_F(outputs, targets, w=10):
+
+def loss_F(outputs, targets, w=5):
     p = 1/(1+torch.exp(-outputs))
     loss = targets*torch.log(p)*w+(1-targets)*torch.log(1-p)
     loss = -loss.mean()
     return loss
 
 criterion = loss_F
-criterion = nn.MultiLabelSoftMarginLoss()
 optimizer = optim.SGD(net.parameters(), lr=args.lr, weight_decay=5e-6)
 
 
