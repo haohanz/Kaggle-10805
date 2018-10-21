@@ -36,7 +36,7 @@ class Bottleneck(nn.Module):
 
 
 class DPN(nn.Module):
-    def __init__(self, cfg, num_class=7178):
+    def __init__(self, cfg, num_class=7172):
         super(DPN, self).__init__()
         in_planes, out_planes = cfg['in_planes'], cfg['out_planes']
         num_blocks, dense_depth = cfg['num_blocks'], cfg['dense_depth']
