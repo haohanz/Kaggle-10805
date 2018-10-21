@@ -23,7 +23,7 @@ parser.add_argument('--num_epoch', default=100, type=int, help='number of epoch'
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
 args = parser.parse_args()
 
-best_f2 = 0  
+best_F2 = 0
 
 
 net = net().to('cuda')
@@ -57,7 +57,7 @@ for epoch in range(args.num_epoch):
     print('Epoch %d'%(epoch))
     train(train_loader, net, criterion, optimizer)
     if epoch%5==0: F2 = val(test_loader, net, criterion)
-    if F2 < best_F2:
+    if F2 > best_F2:
         print('Saving..')
         state = {
             'net': net.state_dict(),
