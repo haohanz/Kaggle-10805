@@ -10,7 +10,8 @@ class loader(Data.Dataset):
         self.list_file = open(list_file).readlines()
         self.num_class = num_class
         self.transform = Tran.Compose([
-               Tran.RandomCrop(224),
+               Tran.Resize(128),
+               Tran.RandomCrop(112),
                Tran.ColorJitter(0.2,0.2,0.2,0.05),
                Tran.RandomHorizontalFlip(),
                Tran.ToTensor(),
@@ -73,7 +74,7 @@ def train(train_loader, net, criterion, optimizer):
 
 
 
-def val(test_loader, net, criterion):
+def val(val_loader, net, criterion):
     net.eval()
     val_loss, TP, TN, FP, FN = 0, 0, 0, 0, 0
     with torch.no_grad():
