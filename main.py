@@ -10,7 +10,7 @@ import torch.utils.data as Data
 import os
 import argparse
 
-from models import ResNet18 as net
+from models import DPN26 as net
 from utils import loader, train, val
 
 
@@ -48,7 +48,7 @@ test_loader = Data.DataLoader(loader('datafile/val.txt',test=True),
                               num_workers=8)
 
 criterion = nn.MultiLabelSoftMarginLoss()
-optimizer = optim.Adam(net.parameters(), lr=args.lr, weight_decay=5e-5)
+optimizer = optim.SGD(net.parameters(), lr=args.lr, weight_decay=5e-6)
 
 
 
