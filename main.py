@@ -56,7 +56,7 @@ optimizer = optim.Adam(net.parameters(), lr=args.lr, weight_decay=5e-5)
 for epoch in range(args.num_epoch):
     print('Epoch %d'%(epoch))
     train(train_loader, net, criterion, optimizer)
-    if epoch%5==0: F2 = val(test_loader, net)
+    if epoch%5==0: F2 = val(test_loader, net, criterion)
     if F2 < best_F2:
         print('Saving..')
         state = {
