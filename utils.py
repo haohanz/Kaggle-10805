@@ -6,7 +6,7 @@ import torch.utils.data as Data
 
 
 class loader(Data.Dataset):
-    def __init__(self, list_file, test=False, num_class=7178):
+    def __init__(self, list_file, test=False, num_class=7172):
         self.list_file = open(list_file).readlines()
         self.num_class = num_class
         self.transform = Tran.Compose([
