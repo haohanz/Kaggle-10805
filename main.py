@@ -35,7 +35,7 @@ if args.resume:
     assert os.path.isdir('checkpoint'), 'Error: no checkpoint directory found!'
     checkpoint = torch.load('./checkpoint/{}.t7'.format(args.model_name))
     net.load_state_dict(checkpoint['net'])
-    best_f2 = checkpoint['F2']
+    best_F2 = checkpoint['F2']
 
 
 train_loader = Data.DataLoader(loader('datafile/train.txt'),
