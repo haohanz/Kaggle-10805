@@ -73,7 +73,7 @@ def train(train_loader, net, criterion, optimizer):
 
 
 
-def val(test_loader, net, criterion):
+def val(val_loader, net, criterion):
     net.eval()
     val_loss, TP, TN, FP, FN = 0, 0, 0, 0, 0
     with torch.no_grad():
