@@ -81,7 +81,7 @@ def DPN92():
     }
     return DPN(cfg)
 
-def DPN92():
+def DPN26():
     cfg = {
         'in_planes': (96,192,384,768),
         'out_planes': (256,512,1024,2048),
