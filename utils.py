@@ -93,5 +93,5 @@ def val(test_loader, net, criterion):
     r = TP / (TP + FN)
     F2 = 5 * r * p / (r + 4*p)
 
-    print('Test set: loss: %.3f | %.3f score'%(val_loss/(batch_idx+1), F2))
+    print('Test set loss: %.3f | F2 score: %.3f'%(val_loss/(batch_idx+1)*1000, F2))
     return F2
