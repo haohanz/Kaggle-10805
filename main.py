@@ -49,7 +49,7 @@ test_loader = Data.DataLoader(loader('datafile/val.txt',test=True),
 def loss_F(outputs, targets, w=10):
     p = 1/(1+torch.exp(-outputs))
     loss = targets*torch.log(p)+(1-targets)*torch.log(1-p)*w
-    loss = -loss.mean()/(w+1)
+    loss = -loss.mean()
     return loss
 
 criterion = loss_F
