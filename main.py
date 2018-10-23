@@ -48,7 +48,7 @@ test_loader = Data.DataLoader(loader('datafile/val.txt',test=True),
                               num_workers=8)
 
 def loss_F(outputs, targets, w=5):
-    p = 1/(1+torch.exp(-outputs))
+    p = torch.sigmoid(outputs)
     loss = targets*torch.log(p)*w+(1-targets)*torch.log(1-p)
     loss = -loss.mean()
     return loss
