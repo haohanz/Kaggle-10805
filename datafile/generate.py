@@ -2,7 +2,7 @@ from collections import defaultdict
 import random
 random.seed(666)
 
-YOUR_PATH = '../../Open_image_256'
+YOUR_PATH = '../data/Open_image_256'
 
 all_labels = open('classes-trainable.csv').readlines()[1:]
 label_list = open('train_human_labels.csv').readlines()[1:]
