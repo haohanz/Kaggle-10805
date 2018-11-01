@@ -30,7 +30,7 @@ class Bottleneck(nn.Module):
         out = self.bn3(self.conv3(out))
         x = self.shortcut(x)
         d = self.out_planes
-        out = torch.cat([x[:,:d,:,:]+out[:,:d,:,:], x[:,d:,:,:], out[:,d:,:,:]], 1)
+        out = torch.cat([x[:,:d,:,:] + out[:,:d,:,:], x[:,d:,:,:], out[:,d:,:,:]], 1)
         out = F.relu(out)
         return out
 
@@ -49,6 +49,7 @@ class DPN(nn.Module):
         self.layer3 = self._make_layer(in_planes[2], out_planes[2], num_blocks[2], dense_depth[2], stride=2)
         self.layer4 = self._make_layer(in_planes[3], out_planes[3], num_blocks[3], dense_depth[3], stride=2)
         self.linear = nn.Linear(out_planes[3]+(num_blocks[3]+1)*dense_depth[3], num_class)
+        self.drop = nn.Dropout(0.5)
 
     def _make_layer(self, in_planes, out_planes, num_blocks, dense_depth, stride):
         strides = [stride] + [1]*(num_blocks-1)
@@ -66,6 +67,7 @@ class DPN(nn.Module):
         out = self.layer4(out)
         out = F.avg_pool2d(out, out.size(-1))
         out = out.view(out.size(0), -1)
+        out = self.drop(out)
         out = self.linear(out)
         return out
 
