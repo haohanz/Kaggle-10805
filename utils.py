@@ -4,6 +4,29 @@ import torch
 import torchvision.transforms as Tran
 import torch.utils.data as Data
 
+from torch.autograd import Variable
+
+
+def mixup_data(x, y, alpha=1.0, use_cuda=True):
+
+    '''Compute the mixup data. Return mixed inputs, pairs of targets, and lambda'''
+    if alpha > 0.:
+        lam = np.random.beta(alpha, alpha)
+    else:
+        lam = 1.
+    batch_size = x.size()[0]
+    if use_cuda:
+        index = torch.randperm(batch_size).cuda()
+    else:
+        index = torch.randperm(batch_size)
+
+    mixed_x = lam * x + (1 - lam) * x[index,:]
+    y_a, y_b = y, y[index]
+    return mixed_x, y_a, y_b, lam
+
+def mixup_criterion(y_a, y_b, lam):
+    return lambda criterion, pred: lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
+
 
 class loader(Data.Dataset):
     def __init__(self, list_file, test=False, num_class=7172):
@@ -26,26 +49,39 @@ class loader(Data.Dataset):
         file, labels = self.list_file[index].split('\t')
         img = Image.open(file)
         img = self.transform(img)
-        labels = list(map(int,labels.strip().split(',')))
-        lable = np.zeros(self.num_class)
+        labels = list(map(int, labels.strip().split(',')))
+        label = np.zeros(self.num_class)
         for i in labels:
-            lable[i] = 1
+            label[i] = 1
         return img, lable.astype('float32')
 
     def __len__(self):
         return len(self.list_file)
 
 
-def train(train_loader, net, criterion, optimizer):
+def train(train_loader, net, criterion, optimizer, alpha):
     net.train()
     train_loss, TP, TN, FP, FN = 0, 0, 0, 0, 0
     n = len(train_loader)
 
     for batch_idx, (inputs, targets) in enumerate(train_loader):
         inputs, targets = inputs.to('cuda'), targets.to('cuda')
+
+        inputs, targets_a, targets_b, lam = mixup_data(inputs, targets, alpha, use_cuda)
+
         optimizer.zero_grad()
+
+        inputs, targets_a, targets_b = Variable(inputs), Variable(targets_a), Variable(targets_b)
+
         outputs = net(inputs)
-        loss = criterion(outputs, targets)
+
+        loss_func = mixup_criterion(targets_a, targets_b, lam)
+        loss = loss_func(criterion, outputs)
+
+#        loss = criterion(outputs, targets)
+
+
+
         loss.backward()
         optimizer.step()
 
