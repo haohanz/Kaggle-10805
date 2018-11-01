@@ -16,13 +16,18 @@ from utils import loader, train, val
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lr', default=0.001, type=float, help='learning rate')
+parser.add_argument('--lr', default=0.0000001, type=float, help='learning rate')
 parser.add_argument('--batch_size', default=256, type=int, help='batch size')
 parser.add_argument('--model_name', default='model', type=str, help='name of the saved model')
 parser.add_argument('--num_epoch', default=100, type=int, help='number of epoch')
-parser.add_argument('--alpha', default=1.0, type=float, help='mixup alpha')
+parser.add_argument('--alpha', '-a', default=1.0, type=float, help='mixup alpha')
+parser.add_argument('--mixup', '-m', default=False, type=bool, help='mixup or not')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
+parser.add_argument('--recall_weight', default=10., type=float, help='the weight of positive examples')
+parser.add_argument('--num_class', default=7172, type=int, help='number of class')
 args = parser.parse_args()
+
+print(args)
 
 best_F2 = 0
 
@@ -48,10 +53,9 @@ test_loader = Data.DataLoader(loader('datafile/val.txt',test=True),
                               batch_size=args.batch_size,
                               num_workers=8)
 
-def loss_F(outputs, targets, w=5):
-    p = torch.sigmoid(outputs)
-    loss = targets*torch.log(p)*w+(1-targets)*torch.log(1-p)
-    loss = -loss.mean()
+def loss_F(outputs, targets, w=args.recall_weight):
+    loss_criterion = nn.BCEWithLogitsLoss(pos_weight=torch.tensor([w] * args.num_class).to('cuda'))
+    loss = loss_criterion(outputs, targets);
     return loss
 
 criterion = loss_F
@@ -62,8 +66,8 @@ optimizer = optim.SGD(net.parameters(), lr=args.lr, weight_decay=5e-6)
 
 for epoch in range(args.num_epoch):
     print('Epoch %d'%(epoch))
-    train(train_loader, net, criterion, optimizer, args.alpha)
-    if epoch%5==0: F2 = val(test_loader, net, criterion)
+    train(train_loader, net, criterion, optimizer, args.alpha, args.mixup)
+    if epoch%1==0: F2 = val(test_loader, net, criterion)
     if F2 > best_F2:
         print('Saving..')
         state = {
