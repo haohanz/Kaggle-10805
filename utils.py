@@ -53,7 +53,7 @@ class loader(Data.Dataset):
         label = np.zeros(self.num_class)
         for i in labels:
             label[i] = 1
-        return img, lable.astype('float32')
+        return img, label.astype('float32')
 
     def __len__(self):
         return len(self.list_file)
@@ -67,7 +67,7 @@ def train(train_loader, net, criterion, optimizer, alpha):
     for batch_idx, (inputs, targets) in enumerate(train_loader):
         inputs, targets = inputs.to('cuda'), targets.to('cuda')
 
-        inputs, targets_a, targets_b, lam = mixup_data(inputs, targets, alpha, use_cuda)
+        inputs, targets_a, targets_b, lam = mixup_data(inputs, targets, alpha)
 
         optimizer.zero_grad()
 
@@ -119,11 +119,11 @@ def val(val_loader, net, criterion):
             outputs = net(inputs)
             loss = criterion(outputs, targets)
             val_loss += loss.item()
-        　　pred = (outputs>0).float()
-        　　TP += ((pred == 1) & (targets.data == 1)).sum().item()
-        　　TN += ((pred == 0) & (targets.data == 0)).sum().item()
-        　　FN += ((pred == 0) & (targets.data == 1)).sum().item()
-        　　FP += ((pred == 1) & (targets.data == 0)).sum().item()
+            pred = (outputs>0).float()
+            TP += ((pred == 1) & (targets.data == 1)).sum().item()
+            TN += ((pred == 0) & (targets.data == 0)).sum().item()
+            FN += ((pred == 0) & (targets.data == 1)).sum().item()
+            FP += ((pred == 1) & (targets.data == 0)).sum().item()
 
     p = TP / (TP + FP)
     r = TP / (TP + FN)
