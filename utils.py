@@ -59,7 +59,7 @@ class loader(Data.Dataset):
         return len(self.list_file)
 
 
-def train(train_loader, net, criterion, optimizer, alpha):
+def train(train_loader, net, criterion, optimizer, alpha, mixup=True):
     net.train()
     train_loss, TP, TN, FP, FN = 0, 0, 0, 0, 0
     n = len(train_loader)
@@ -67,20 +67,18 @@ def train(train_loader, net, criterion, optimizer, alpha):
     for batch_idx, (inputs, targets) in enumerate(train_loader):
         inputs, targets = inputs.to('cuda'), targets.to('cuda')
 
-        inputs, targets_a, targets_b, lam = mixup_data(inputs, targets, alpha)
+        if (mixup and alpha > 0):
+            inputs, targets_a, targets_b, lam = mixup_data(inputs, targets, alpha)
+            inputs, targets_a, targets_b = Variable(inputs), Variable(targets_a), Variable(targets_b)
 
         optimizer.zero_grad()
-
-        inputs, targets_a, targets_b = Variable(inputs), Variable(targets_a), Variable(targets_b)
-
         outputs = net(inputs)
 
-        loss_func = mixup_criterion(targets_a, targets_b, lam)
-        loss = loss_func(criterion, outputs)
-
-#        loss = criterion(outputs, targets)
-
-
+        if mixup and alpha > 0:
+            loss_func = mixup_criterion(targets_a, targets_b, lam)
+            loss = loss_func(criterion, outputs)
+        else:
+            loss = criterion(outputs, targets)
 
         loss.backward()
         optimizer.step()
@@ -94,8 +92,8 @@ def train(train_loader, net, criterion, optimizer, alpha):
         p = TP / (TP + FP + 1e-10)
         r = TP / (TP + FN + 1e-10)
         F2 = 5 * r * p / (r + 4*p + 1e-10)
-        if batch_idx % (n//20) == 0:
-            print('{}/20 passed, loss is {}, p is {}%, r is {}%, F2 is {}'.format(
+        if batch_idx % (n//800) == 0:
+            print('{}/800 passed, loss is {}, p is {}%, r is {}%, F2 is {}'.format(
                            batch_idx//(n//20), 
                            round(train_loss/(batch_idx+1)*1000,3),
                            round(p*100,3),
@@ -103,11 +101,8 @@ def train(train_loader, net, criterion, optimizer, alpha):
                            round(F2,3))
                     )
 
-
     print('Epoch finished!')
     return
-
-
 
 
 def val(val_loader, net, criterion):
