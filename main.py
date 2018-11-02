@@ -16,14 +16,14 @@ from utils import loader, train, val
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lr', default=0.0000001, type=float, help='learning rate')
+parser.add_argument('--lr', default=0.00000001, type=float, help='learning rate')
 parser.add_argument('--batch_size', default=256, type=int, help='batch size')
 parser.add_argument('--model_name', default='model', type=str, help='name of the saved model')
 parser.add_argument('--num_epoch', default=100, type=int, help='number of epoch')
 parser.add_argument('--alpha', '-a', default=1.0, type=float, help='mixup alpha')
 parser.add_argument('--mixup', '-m', default=False, type=bool, help='mixup or not')
 parser.add_argument('--resume', '-r', action='store_true', help='resume from checkpoint')
-parser.add_argument('--recall_weight', default=10., type=float, help='the weight of positive examples')
+parser.add_argument('--recall_weight', '-w', default=10., type=float, help='the weight of positive examples')
 parser.add_argument('--num_class', default=7172, type=int, help='number of class')
 args = parser.parse_args()
 
@@ -59,7 +59,8 @@ def loss_F(outputs, targets, w=args.recall_weight):
     return loss
 
 criterion = loss_F
-optimizer = optim.SGD(net.parameters(), lr=args.lr, weight_decay=5e-6)
+#optimizer = optim.SGD(net.parameters(), lr=args.lr, weight_decay=5e-6)
+optimizer = optim.Adam(net.parameters(), lr=args.lr) # using default learning rate.
 
 
 
